@@ -121,6 +121,8 @@ public protocol SolanaAPIClient {
     ///
     func getFees(commitment: Commitment?) async throws -> Fee
 
+    func getFeeForMessage(message: String, commitment: Commitment?) async throws -> Lamports
+    
     /// Returns minimum balance required to make account rent exempt
     /// - Parameters:
     ///  - dataLength: account data length

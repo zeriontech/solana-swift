@@ -220,6 +220,10 @@ private class MockAPIClient: SolanaAPIClient {
             lastValidSlot: lastValidSlot
         )
     }
+    
+    func getFeeForMessage(message: String, commitment: Commitment?) async throws -> Lamports {
+        10000
+    }
 
     func getRecentBlockhash(commitment _: Commitment?) async throws -> String {
         switch testCase {
