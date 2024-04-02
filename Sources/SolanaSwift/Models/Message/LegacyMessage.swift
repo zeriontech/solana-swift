@@ -60,6 +60,10 @@ public struct Message: IMessage, Equatable {
 
         return data
     }
+    
+    public func getAccountKeys(addressLookupTableAccounts: [AddressLookupTableAccount]) throws -> MessageAccountKeys {
+        .init(staticAccountKeys: staticAccountKeys)
+    }
 
     static func from(data: Data) throws -> Message {
         var data = data

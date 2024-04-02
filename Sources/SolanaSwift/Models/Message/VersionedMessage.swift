@@ -24,6 +24,28 @@ public enum VersionedMessage: Equatable {
         case let .v0(message): return message
         }
     }
+    
+    public var header: MessageHeader {
+        value.header
+    }
+    
+    public var compiledInstructions: [MessageCompiledInstruction] {
+        switch self {
+        case .legacy:
+            // need update
+            return []
+        case .v0(let value):
+            return value.compiledInstructions
+        }
+    }
+    
+    public var staticAccountKeys: [PublicKey] {
+        value.staticAccountKeys
+    }
+    
+    public var recentBlockhash: BlockHash {
+        value.recentBlockhash
+    }
 
     public mutating func setRecentBlockHash(_ blockHash: BlockHash) {
         switch self {
@@ -34,5 +56,9 @@ public enum VersionedMessage: Equatable {
             messageV0.recentBlockhash = blockHash
             self = .v0(messageV0)
         }
+    }
+    
+    public func getAccountKeys(addressLookupTableAccounts: [AddressLookupTableAccount]) throws -> MessageAccountKeys {
+        try value.getAccountKeys(addressLookupTableAccounts: addressLookupTableAccounts)
     }
 }
