@@ -22,17 +22,12 @@ public extension SolanaAPIClient {
         try await getMinimumBalanceForRentExemption(dataLength: span, commitment: "recent")
     }
 
-    func getRecentBlockhash() async throws -> String {
-        try await getRecentBlockhash(commitment: nil)
+    func getLatestBlockhash() async throws -> String {
+        try await getLatestBlockhash(commitment: nil)
     }
 
     func observeSignatureStatus(signature: String) -> AsyncStream<PendingTransactionStatus> {
         observeSignatureStatus(signature: signature, timeout: 60, delay: 2)
-    }
-
-    /// Get fee per signature
-    func getLamportsPerSignature() async throws -> UInt64? {
-        try await getFees(commitment: nil).feeCalculator?.lamportsPerSignature
     }
 
     /// Convenience method for request(method:params:) with no params

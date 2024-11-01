@@ -89,11 +89,6 @@ public class JSONRPCAPIClient: SolanaAPIClient {
     public func getEpochInfo(commitment: Commitment? = nil) async throws -> EpochInfo {
         try await get(method: "getEpochInfo", params: [RequestConfiguration(commitment: commitment)])
     }
-
-    public func getFees(commitment: Commitment? = nil) async throws -> Fee {
-        let result: Rpc<Fee> = try await get(method: "getFees", params: [RequestConfiguration(commitment: commitment)])
-        return result.value
-    }
     
     public func getFeeForMessage(message: String, commitment: Commitment? = nil) async throws -> Lamports {
         let result: Rpc<Lamports> = try await get(method: "getFeeForMessage", params: [message, RequestConfiguration(commitment: commitment)])
@@ -109,9 +104,9 @@ public class JSONRPCAPIClient: SolanaAPIClient {
         )
     }
 
-    public func getRecentBlockhash(commitment: Commitment? = nil) async throws -> String {
-        let result: Rpc<Fee> = try await get(method: "getRecentBlockhash",
-                                             params: [RequestConfiguration(commitment: commitment)])
+    public func getLatestBlockhash(commitment: Commitment? = nil) async throws -> String {
+        let result: Rpc<GetLatestBlockhashResponse> = try await get(method: "getLatestBlockhash",
+                                                                    params: [RequestConfiguration(commitment: commitment)])
         guard let blockhash = result.value.blockhash else {
             throw APIClientError.blockhashNotFound
         }

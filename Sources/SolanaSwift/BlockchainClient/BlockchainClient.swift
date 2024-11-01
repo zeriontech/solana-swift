@@ -19,40 +19,24 @@ public class BlockchainClient: SolanaBlockchainClient {
     ///   - instructions: the instructions of the transaction
     ///   - signers: the signers of the transaction
     ///   - feePayer: the feePayer of the transaction
-    ///   - feeCalculator: (Optional) fee custom calculator for calculating fee
     /// - Returns: PreparedTransaction, can be sent or simulated using SolanaBlockchainClient
     public func prepareTransaction(
         instructions: [TransactionInstruction],
         signers: [KeyPair],
-        feePayer: PublicKey,
-        feeCalculator fc: FeeCalculator? = nil
+        feePayer: PublicKey
     ) async throws -> PreparedTransaction {
         // form transaction
         var transaction = Transaction(instructions: instructions, recentBlockhash: nil, feePayer: feePayer)
 
-        let feeCalculator: FeeCalculator
-        if let fc = fc {
-            feeCalculator = fc
-        } else {
-            let (lps, minRentExemption) = try await(
-                apiClient.getFees(commitment: nil).feeCalculator?.lamportsPerSignature,
-                apiClient.getMinimumBalanceForRentExemption(span: 165)
-            )
-            let lamportsPerSignature = lps ?? 5000
-            feeCalculator = DefaultFeeCalculator(
-                lamportsPerSignature: lamportsPerSignature,
-                minRentExemption: minRentExemption
-            )
-        }
-        let expectedFee = try feeCalculator.calculateNetworkFee(transaction: transaction)
-
-        let blockhash = try await apiClient.getRecentBlockhash()
+        let blockhash = try await apiClient.getLatestBlockhash()
         transaction.recentBlockhash = blockhash
 
         // if any signers, sign
         if !signers.isEmpty {
             try transaction.sign(signers: signers)
         }
+        
+        let expectedFee = try await apiClient.getFeeForMessage(message: transaction.serializeMessage().base64EncodedString(), commitment: nil)
 
         // return formed transaction
         return .init(transaction: transaction, signers: signers, expectedFee: expectedFee)
@@ -112,7 +96,6 @@ public class BlockchainClient: SolanaBlockchainClient {
     ///   - amount: amount to be sent
     ///   - feePayer: (Optional) if the transaction would be paid by another user
     ///   - transferChecked: (Default: false) use transferChecked instruction instead of transfer transaction
-    ///   - minRentExemption: (Optional) pre-calculated min rent exemption, will be fetched if not provided
     /// - Returns: (preparedTransaction: PreparedTransaction, realDestination: String), preparedTransaction can be sent
     /// or simulated using SolanaBlockchainClient, the realDestination is the real spl address of destination. Can be
     /// different from destinationAddress if destinationAddress is a native Solana address
@@ -125,9 +108,7 @@ public class BlockchainClient: SolanaBlockchainClient {
         to destinationAddress: String,
         amount: UInt64,
         feePayer: PublicKey? = nil,
-        transferChecked: Bool = false,
-        lamportsPerSignature: Lamports,
-        minRentExemption: Lamports
+        transferChecked: Bool = false
     ) async throws -> (preparedTransaction: PreparedTransaction, realDestination: String) {
         let feePayer = feePayer ?? account.publicKey
 
@@ -150,7 +131,6 @@ public class BlockchainClient: SolanaBlockchainClient {
         var instructions = [TransactionInstruction]()
 
         // create associated token address
-        var accountsCreationFee: UInt64 = 0
         if splDestination.isUnregisteredAsocciatedToken {
             let mint = try PublicKey(string: mintAddress)
             let owner = try PublicKey(string: destinationAddress)
@@ -162,7 +142,6 @@ public class BlockchainClient: SolanaBlockchainClient {
                 tokenProgramId: tokenProgramId
             )
             instructions.append(createATokenInstruction)
-            accountsCreationFee += minRentExemption
         }
 
         // send instruction
@@ -222,11 +201,7 @@ public class BlockchainClient: SolanaBlockchainClient {
         let preparedTransaction = try await prepareTransaction(
             instructions: instructions,
             signers: [account],
-            feePayer: feePayer,
-            feeCalculator: DefaultFeeCalculator(
-                lamportsPerSignature: lamportsPerSignature,
-                minRentExemption: minRentExemption
-            )
+            feePayer: feePayer
         )
         return (preparedTransaction, realDestination)
     }

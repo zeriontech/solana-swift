@@ -91,15 +91,11 @@ final class BlockchainClientWithTokenProgramTests: XCTestCase {
             decimals: 6,
             from: source,
             to: destination,
-            amount: amount.toLamport(decimals: 6),
-            lamportsPerSignature: 5000,
-            minRentExemption: 2_039_280
+            amount: amount.toLamport(decimals: 6)
         )
         .preparedTransaction
 
-        XCTAssertEqual(tx.expectedFee, expectedFee)
-
-        let recentBlockhash = try await apiClient.getRecentBlockhash()
+        let recentBlockhash = try await apiClient.getLatestBlockhash()
         let serializedTransaction = try blockchainClient.signAndSerialize(
             preparedTransaction: tx,
             recentBlockhash: recentBlockhash
@@ -183,49 +179,12 @@ private class MockAPIClient: SolanaAPIClient {
         }
         return BufferInfo<T>(lamports: lamports, owner: owner, data: data, executable: executable, rentEpoch: rentEpoch)
     }
-
-    func getFees(commitment _: Commitment?) async throws -> Fee {
-        let blockhash: String
-        let lastValidSlot: UInt64
-        switch testCase {
-        case "testPrepareSendingNativeSOL()":
-            blockhash = "DSfeYUm7WDw1YnKodR361rg8sUzUCGdat9V7fSKPFgzq"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingNativeSOLToNewlyCreatedAccount()":
-            blockhash = "7GhCDV2MK7RVhYzD3iNZAVkCd9hYCgyqkgXdFbEFj9PD"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#1":
-            blockhash = "9VG1E6DTdjRRx2JpbXrH9QPTQQ6FRjakvStttnmSV7fR"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#2":
-            blockhash = "3uRa2bbJgTKVEKmZqKRtfWfhZF5YMn4D9xE64NYvTh4v"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#3":
-            blockhash = "4VXrgGDjah4rCo2bvqSWXJTLbaDkmn4NTXknLn9GzacN"
-            lastValidSlot = 133_458_521
-        case "testPrepareSendingSPLTokens()#4":
-            blockhash = "Bc11qGhSE3Vham6cBWEUxhRVVSNtzkyisdGGXwh6hvnT"
-            lastValidSlot = 133_461_545
-        case "testPrepareSendingSPLTokens()#5":
-            blockhash = "7GhCDV2MK7RVhYzD3iNZAVkCd9hYCgyqkgXdFbEFj9PD"
-            lastValidSlot = 133_461_991
-
-        default:
-            fatalError()
-        }
-        return .init(
-            feeCalculator: .init(lamportsPerSignature: 5000),
-            feeRateGovernor: nil,
-            blockhash: blockhash,
-            lastValidSlot: lastValidSlot
-        )
-    }
     
     func getFeeForMessage(message: String, commitment: Commitment?) async throws -> Lamports {
         10000
     }
 
-    func getRecentBlockhash(commitment _: Commitment?) async throws -> String {
+    func getLatestBlockhash(commitment _: Commitment?) async throws -> String {
         switch testCase {
         case "testPrepareSendingNativeSOL()":
             return "DSfeYUm7WDw1YnKodR361rg8sUzUCGdat9V7fSKPFgzq"

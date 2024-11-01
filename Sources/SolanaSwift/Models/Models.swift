@@ -97,23 +97,9 @@ public struct EpochSchedule: Decodable {
     public let firstNormalSlot: UInt64
 }
 
-public struct Fee: Decodable {
-    public let feeCalculator: FeeCalculatorResponse?
-    public let feeRateGovernor: FeeRateGovernor?
+public struct GetLatestBlockhashResponse: Decodable {
     public let blockhash: String?
-    public let lastValidSlot: UInt64?
-}
-
-public struct FeeCalculatorResponse: Decodable {
-    public let lamportsPerSignature: Lamports
-}
-
-public struct FeeRateGovernor: Decodable {
-    public let burnPercent: UInt64
-    public let maxLamportsPerSignature: Lamports
-    public let minLamportsPerSignature: Lamports
-    public let targetLamportsPerSignature: Lamports
-    public let targetSignaturesPerSlot: UInt64
+    public let lastValidBlockHeight: UInt64?
 }
 
 public struct Identity: Decodable {

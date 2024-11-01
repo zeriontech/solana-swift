@@ -2,7 +2,7 @@ import Foundation
 
 /// The prepared transaction that can be sent or simulate in SolanaBlockchainClient
 public struct PreparedTransaction: Equatable {
-    public init(transaction: Transaction, signers: [KeyPair], expectedFee: FeeAmount) {
+    public init(transaction: Transaction, signers: [KeyPair], expectedFee: Lamports) {
         self.transaction = transaction
         self.signers = signers
         self.expectedFee = expectedFee
@@ -10,7 +10,7 @@ public struct PreparedTransaction: Equatable {
 
     public var transaction: Transaction
     public var signers: [KeyPair]
-    public var expectedFee: FeeAmount
+    public var expectedFee: Lamports
 
     public mutating func sign() throws {
         try transaction.sign(signers: signers)

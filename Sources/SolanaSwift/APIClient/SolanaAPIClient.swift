@@ -110,17 +110,14 @@ public protocol SolanaAPIClient {
     ///
     func getEpochInfo(commitment: Commitment?) async throws -> EpochInfo
 
-    /// Returns a recent block hash from the ledger, a fee schedule that can be used to compute the cost of submitting a
-    /// transaction using it, and the last slot in which the blockhash will be valid.
+    /// Get the fee the network will charge for a particular Message
     /// - Parameters:
+    ///  - message: Base-64 encoded Message; Required
     ///  - commitment: Optional
+    ///  - minContextSlot: Optional
     /// - Throws: APIClientError
-    /// - Returns The result field will be an array of u64 integers listing confirmed blocks starting at start_slot for
-    /// up to limit blocks, inclusive
-    /// - SeeAlso https://docs.solana.com/developing/clients/jsonrpc-api#getfees
-    ///
-    func getFees(commitment: Commitment?) async throws -> Fee
-
+    /// - Returns Fee corresponding to the message at the specified blockhash
+    /// - SeeAlso https://solana.com/docs/rpc/http/getfeeformessage
     func getFeeForMessage(message: String, commitment: Commitment?) async throws -> Lamports
     
     /// Returns minimum balance required to make account rent exempt
@@ -281,14 +278,13 @@ public protocol SolanaAPIClient {
     ///
     func observeSignatureStatus(signature: String, timeout: Int, delay: Int) -> AsyncStream<PendingTransactionStatus>
 
-    /// Returns a recent block hash from the ledger, and a fee schedule that can be used to compute the cost of
-    /// submitting a transaction using it.
+    /// Returns the latest blockhash
     /// - Parameters:
     ///  - commitment: (optional) Commitment
     /// - Throws: APIClientError
-    /// - SeeAlso https://docs.solana.com/developing/clients/jsonrpc-api#getrecentblockhash
+    /// - SeeAlso https://solana.com/docs/rpc/http/getlatestblockhash
     ///
-    func getRecentBlockhash(commitment: Commitment?) async throws -> String
+    func getLatestBlockhash(commitment: Commitment?) async throws -> String
 
     /// Returns signatures for confirmed transactions that include the given address in their accountKeys list.
     /// Returns signatures backwards in time from the provided signature or most recent confirmed block

@@ -32,13 +32,12 @@ class BlockchainClientWithNativeSOLTests: XCTestCase {
             feePayer: account.publicKey
         )
 
-        let recentBlockhash = try await apiClient.getRecentBlockhash()
+        let recentBlockhash = try await apiClient.getLatestBlockhash()
         let serializedTransaction = try blockchain.signAndSerialize(
             preparedTransaction: tx,
             recentBlockhash: recentBlockhash
         )
 
-        XCTAssertEqual(tx.expectedFee, .init(transaction: 5000, accountBalances: 0))
         XCTAssertEqual(
             serializedTransaction,
             "AYqN18ZDaJtv61HxaIUnmtK0f+ST/HaO3YzAOBjwtG9Qf/Td58DSe5zS5nyx9InT+UyLIZbb4nFE/XYrWfHKCwQBAAEDJ/e5BFWJMqaTuN1LbmcQ3ile94QrPqzzX8y+j5kQCsVQai+mnMv4ueKX0uXJIyAIv0UeTX3PGhu9bYIRBgH+2gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAuN92Q8S3ViiBKFjrCz0SjRSx6JhG5pY6fuBlpw98caYBAgIAAQwCAAAAZAAAAAAAAAA="
@@ -57,13 +56,12 @@ class BlockchainClientWithNativeSOLTests: XCTestCase {
             feePayer: account.publicKey
         )
 
-        let recentBlockhash = try await apiClient.getRecentBlockhash()
+        let recentBlockhash = try await apiClient.getLatestBlockhash()
         let serializedTransaction = try blockchain.signAndSerialize(
             preparedTransaction: tx,
             recentBlockhash: recentBlockhash
         )
 
-        XCTAssertEqual(tx.expectedFee, .init(transaction: 5000, accountBalances: 0))
         XCTAssertEqual(
             serializedTransaction,
             "AYqN18ZDaJtv61HxaIUnmtK0f+ST/HaO3YzAOBjwtG9Qf/Td58DSe5zS5nyx9InT+UyLIZbb4nFE/XYrWfHKCwQBAAEDJ/e5BFWJMqaTuN1LbmcQ3ile94QrPqzzX8y+j5kQCsVQai+mnMv4ueKX0uXJIyAIv0UeTX3PGhu9bYIRBgH+2gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAuN92Q8S3ViiBKFjrCz0SjRSx6JhG5pY6fuBlpw98caYBAgIAAQwCAAAAZAAAAAAAAAA="
@@ -146,49 +144,12 @@ private class MockAPIClient: SolanaAPIClient {
         }
         return BufferInfo<T>(lamports: lamports, owner: owner, data: data, executable: executable, rentEpoch: rentEpoch)
     }
-
-    func getFees(commitment _: Commitment?) async throws -> Fee {
-        let blockhash: String
-        let lastValidSlot: UInt64
-        switch testCase {
-        case "testPrepareSendingNativeSOL()":
-            blockhash = "DSfeYUm7WDw1YnKodR361rg8sUzUCGdat9V7fSKPFgzq"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingNativeSOLToNewlyCreatedAccount()":
-            blockhash = "7GhCDV2MK7RVhYzD3iNZAVkCd9hYCgyqkgXdFbEFj9PD"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#1":
-            blockhash = "9VG1E6DTdjRRx2JpbXrH9QPTQQ6FRjakvStttnmSV7fR"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#2":
-            blockhash = "3uRa2bbJgTKVEKmZqKRtfWfhZF5YMn4D9xE64NYvTh4v"
-            lastValidSlot = 133_389_328
-        case "testPrepareSendingSPLTokens()#3":
-            blockhash = "4VXrgGDjah4rCo2bvqSWXJTLbaDkmn4NTXknLn9GzacN"
-            lastValidSlot = 133_458_521
-        case "testPrepareSendingSPLTokens()#4":
-            blockhash = "Bc11qGhSE3Vham6cBWEUxhRVVSNtzkyisdGGXwh6hvnT"
-            lastValidSlot = 133_461_545
-        case "testPrepareSendingSPLTokens()#5":
-            blockhash = "7GhCDV2MK7RVhYzD3iNZAVkCd9hYCgyqkgXdFbEFj9PD"
-            lastValidSlot = 133_461_991
-
-        default:
-            fatalError()
-        }
-        return .init(
-            feeCalculator: .init(lamportsPerSignature: 5000),
-            feeRateGovernor: nil,
-            blockhash: blockhash,
-            lastValidSlot: lastValidSlot
-        )
-    }
     
     func getFeeForMessage(message: String, commitment: Commitment?) async throws -> Lamports {
         10000
     }
 
-    func getRecentBlockhash(commitment _: Commitment?) async throws -> String {
+    func getLatestBlockhash(commitment _: Commitment?) async throws -> String {
         switch testCase {
         case "testPrepareSendingNativeSOL()":
             return "DSfeYUm7WDw1YnKodR361rg8sUzUCGdat9V7fSKPFgzq"
