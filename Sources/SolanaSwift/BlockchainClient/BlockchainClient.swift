@@ -26,10 +26,8 @@ public class BlockchainClient: SolanaBlockchainClient {
         feePayer: PublicKey
     ) async throws -> PreparedTransaction {
         // form transaction
-        var transaction = Transaction(instructions: instructions, recentBlockhash: nil, feePayer: feePayer)
-
         let blockhash = try await apiClient.getLatestBlockhash()
-        transaction.recentBlockhash = blockhash
+        var transaction = Transaction(instructions: instructions, recentBlockhash: blockhash, feePayer: feePayer)
 
         // if any signers, sign
         if !signers.isEmpty {
