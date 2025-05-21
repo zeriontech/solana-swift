@@ -300,7 +300,8 @@ public struct TokenBalance: Decodable {
 }
 
 public struct SimulationResult: Decodable {
-    public let err: ErrorDetail? // TransactionError? // string | object
+    public let err: ErrorDetail?
+    public let unitsConsumed: UInt32?
     public let logs: [String]
 }
 
@@ -387,4 +388,9 @@ public struct PerfomanceSamples: Decodable {
     public let numTransactions: Int
     public let samplePeriodSecs: Int
     public let slot: Int
+}
+
+public struct PrioritizationFee: Decodable {
+    public let prioritizationFee: UInt64
+    public let slot: UInt64
 }

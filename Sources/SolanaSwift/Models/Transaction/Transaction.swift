@@ -78,7 +78,7 @@ public struct Transaction: Encodable, Equatable {
         try _addSignature(signature)
     }
 
-    mutating func serializeMessage() throws -> Data {
+    public mutating func serializeMessage() throws -> Data {
         try compile().serialize()
     }
 

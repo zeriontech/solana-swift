@@ -33,6 +33,15 @@ public protocol SolanaAPIClient {
     /// - SeeAlso https://docs.solana.com/developing/clients/jsonrpc-api#getbalance
     ///
     func getBalance(account: String, commitment: Commitment?) async throws -> UInt64
+    
+    /// Returns a list of prioritization fees from recent blocks.
+    /// - Parameters:
+    ///  - accounts: An array of Account addresses (up to a maximum of 128 addresses), as base-58 encoded strings
+    /// - Throws: APIClientError
+    /// - Returns List of prioritization fees from recent blocks
+    /// - SeeAlso https://solana.com/pt/docs/rpc/http/getrecentprioritizationfees
+    ///
+    func getRecentPrioritizationFees(accounts: [String]) async throws -> [PrioritizationFee]
 
     /// Returns commitment for particular block
     /// - Parameters:

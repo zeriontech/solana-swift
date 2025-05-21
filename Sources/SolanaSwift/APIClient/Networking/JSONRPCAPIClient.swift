@@ -59,6 +59,10 @@ public class JSONRPCAPIClient: SolanaAPIClient {
         return response.value
     }
 
+    public func getRecentPrioritizationFees(accounts: [String]) async throws -> [PrioritizationFee] {
+        try await get(method: "getRecentPrioritizationFees", params: [accounts])
+    }
+    
     public func getBlockCommitment(block: UInt64) async throws -> BlockCommitment {
         try await get(method: "getBlockCommitment", params: [block])
     }
