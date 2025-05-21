@@ -45,6 +45,10 @@ public struct VersionedTransaction: Equatable {
 
         return serializedTransaction
     }
+    
+    public func serializeMessage() throws -> Data {
+        try message.value.serialize()
+    }
 
     public static func deserialize(data: Data) throws -> Self {
         var byteArray = BinaryReader(bytes: data.bytes)

@@ -351,7 +351,7 @@ public struct Transaction: Encodable, Equatable {
         return data
     }
 
-    public static func from(data: Data) throws -> Transaction {
+    public static func deserialize(data: Data) throws -> Transaction {
         var data = data
         var signatures: [String] = []
         let signatureCount = data.decodeLength()
@@ -361,8 +361,7 @@ public struct Transaction: Encodable, Equatable {
             data = data.dropFirst(Constants.signatureLength)
             signatures.append(Base58.encode(signatureData))
         }
-
-        print(data.base64EncodedString())
+        
         return try populate(Message.from(data: data), signatures)
     }
 
